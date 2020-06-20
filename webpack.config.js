@@ -11,7 +11,7 @@ module.exports = {
         'lognet.min': entry,
     },
     output: {
-        path: path.resolve(__dirname, '/dist/'),
+        path: path.resolve(__dirname, './dist/'),
         filename: '[name].js',
         library: 'lognet',
         libraryTarget: 'umd',
