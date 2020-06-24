@@ -1,8 +1,4 @@
 class MissionLogger {
-    constructor(appKey, missionId) {
-        this.appKey = appKey;
-        this.missionId = missionId;
-    }
     debug = (content, missionId) => {
         this.log('debug', content, missionId);
     }
@@ -17,10 +13,10 @@ class MissionLogger {
     }
     // params: (type, content)
     log = (type, content, missionId) => {
-        this.submit(missionId ? missionId : this.missionId, type, content);
+        this.submit(missionId ? missionId : this.parent.options.missionId, type, content);
     }
     submit = (missionId, type, content) => {
-        if (!this.appKey) {
+        if (!this.parent || !this.parent.options.appKey) {
             this.printError('App key is not set.');
             return;
         }
@@ -31,24 +27,25 @@ class MissionLogger {
         fetch('https://lognet.pwp.app/api/submit/mission', {
             method: 'POST',
             body: JSON.stringify({
-                appKey: this.appKey,
+                appKey: this.parent.options.appKey,
                 type,
                 missionId: missionId,
                 path: window.location.pathname,
                 content: content,
+                ...this.parent.getClientInfo()
             }),
             headers: new Headers({
                 'Content-Type': 'application/json',
             }),
         }).catch((e) => {
-            if (this.debug) {
+            if (this.parent && this.parent.debug) {
                 this.printError(e);
             }
         });
     }
     printError = (err) => {
-        if (this.privateError) {
-            this.privateError.apply(console, err);
+        if (this.parent && this.parent.privateError) {
+            this.parent.privateError.apply(console, err);
         } else {
             console.log(err);
         }

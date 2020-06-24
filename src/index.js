@@ -16,8 +16,21 @@ class Lognet {
         this.info = this.logger.info;
         this.warn = this.logger.warn;
         this.error = this.logger.error;
+        // set up parent
+        this.logger.parent = this;
         // init listener
         this.addListener();
+    }
+    getClientInfo = () => {
+        return {
+            clientWidth: document.body.clientWidth,
+            clientHeight: document.body.clientHeight,
+            windowInnerWidth: window.innerWidth,
+            windowInnerHeight: window.innerHeight,
+            windowOuterWidth: window.outerWidth,
+            windowOuterHeight: window.outerHeight,
+            userAgent: window.navigator.userAgent,
+        }
     }
     addListener = () => {
         window.addEventListener('error', (e) => {
@@ -40,6 +53,7 @@ class Lognet {
                 appKey: this.options.appKey,
                 path: window.location.pathname,
                 content: content,
+                ...this.getClientInfo()
             }),
             headers: new Headers({
                 'Content-Type': 'application/json',
@@ -72,15 +86,9 @@ class Lognet {
     }
     setKey = (appKey) => {
         this.options.appKey = appKey;
-        if (this.logger) {
-            this.logger.setKey(appKey);
-        }
     }
     setMission = (missionId) => {
         this.options.missionId = missionId;
-        if (this.logger) {
-            this.logger.setMission(missionId);
-        }
     }
     setInjection = (injection) => {
         if (typeof injection !== 'boolean') {
@@ -90,9 +98,6 @@ class Lognet {
         this.injection = injection;
         if (!this.injection) {
             console.error = this.privateError;
-            if (this.logger) {
-                this.logger.setPrivateError(null);
-            }
         } else {
             this.interceptConsole();
         }
@@ -103,9 +108,6 @@ class Lognet {
             return;
         }
         this.debug = flag;
-        if (this.logger) {
-            this.logger.setDebug(flag);
-        }
     }
     interceptConsole = () => {
         this.privateError = console.error;
@@ -113,10 +115,6 @@ class Lognet {
             this.submitGeneral(err);
             this.privateError.apply(console, err);
         };
-        // set up logger
-        if (this.logger) {
-            this.logger.setPrivateError(this.privateError);
-        }
     }
 }
 

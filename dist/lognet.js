@@ -112,6 +112,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+  function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
   function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -120,6 +124,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var _this = this;
 
     _classCallCheck(this, Lognet);
+
+    _defineProperty(this, "getClientInfo", function () {
+      return {
+        clientWidth: document.body.clientWidth,
+        clientHeight: document.body.clientHeight,
+        windowInnerWidth: window.innerWidth,
+        windowInnerHeight: window.innerHeight,
+        windowOuterWidth: window.outerWidth,
+        windowOuterHeight: window.outerHeight,
+        userAgent: window.navigator.userAgent
+      };
+    });
 
     _defineProperty(this, "addListener", function () {
       window.addEventListener('error', function (e) {
@@ -144,11 +160,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       fetch('https://lognet.pwp.app/api/submit/general', {
         method: 'POST',
-        body: JSON.stringify({
+        body: JSON.stringify(_objectSpread({
           appKey: _this.options.appKey,
           path: window.location.pathname,
           content: content
-        }),
+        }, _this.getClientInfo())),
         headers: new Headers({
           'Content-Type': 'application/json'
         })
@@ -186,18 +202,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
     _defineProperty(this, "setKey", function (appKey) {
       _this.options.appKey = appKey;
-
-      if (_this.logger) {
-        _this.logger.setKey(appKey);
-      }
     });
 
     _defineProperty(this, "setMission", function (missionId) {
       _this.options.missionId = missionId;
-
-      if (_this.logger) {
-        _this.logger.setMission(missionId);
-      }
     });
 
     _defineProperty(this, "setInjection", function (injection) {
@@ -211,10 +219,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       if (!_this.injection) {
         console.error = _this.privateError;
-
-        if (_this.logger) {
-          _this.logger.setPrivateError(null);
-        }
       } else {
         _this.interceptConsole();
       }
@@ -228,10 +232,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       _this.debug = flag;
-
-      if (_this.logger) {
-        _this.logger.setDebug(flag);
-      }
     });
 
     _defineProperty(this, "interceptConsole", function () {
@@ -241,12 +241,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         _this.submitGeneral(err);
 
         _this.privateError.apply(console, err);
-      }; // set up logger
-
-
-      if (_this.logger) {
-        _this.logger.setPrivateError(_this.privateError);
-      }
+      };
     });
 
     this.inited = false; // init options
@@ -262,7 +257,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     this.debug = this.logger.debug;
     this.info = this.logger.info;
     this.warn = this.logger.warn;
-    this.error = this.logger.error; // init listener
+    this.error = this.logger.error; // set up parent
+
+    this.logger.parent = this; // init listener
 
     this.addListener();
   };
@@ -294,11 +291,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   });
   _exports["default"] = void 0;
 
+  function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
   function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-  var MissionLogger = function MissionLogger(_appKey, _missionId) {
+  var MissionLogger = function MissionLogger() {
     var _this = this;
 
     _classCallCheck(this, MissionLogger);
@@ -320,11 +321,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     });
 
     _defineProperty(this, "log", function (type, content, missionId) {
-      _this.submit(missionId ? missionId : _this.missionId, type, content);
+      _this.submit(missionId ? missionId : _this.parent.options.missionId, type, content);
     });
 
     _defineProperty(this, "submit", function (missionId, type, content) {
-      if (!_this.appKey) {
+      if (!_this.parent || !_this.parent.options.appKey) {
         _this.printError('App key is not set.');
 
         return;
@@ -338,26 +339,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
       fetch('https://lognet.pwp.app/api/submit/mission', {
         method: 'POST',
-        body: JSON.stringify({
-          appKey: _this.appKey,
+        body: JSON.stringify(_objectSpread({
+          appKey: _this.parent.options.appKey,
           type: type,
           missionId: missionId,
           path: window.location.pathname,
           content: content
-        }),
+        }, _this.parent.getClientInfo())),
         headers: new Headers({
           'Content-Type': 'application/json'
         })
       })["catch"](function (e) {
-        if (_this.debug) {
+        if (_this.parent && _this.parent.debug) {
           _this.printError(e);
         }
       });
     });
 
     _defineProperty(this, "printError", function (err) {
-      if (_this.privateError) {
-        _this.privateError.apply(console, err);
+      if (_this.parent && _this.parent.privateError) {
+        _this.parent.privateError.apply(console, err);
       } else {
         console.log(err);
       }
@@ -378,9 +379,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     _defineProperty(this, "setDebug", function (flag) {
       _this.flag = flag;
     });
-
-    this.appKey = _appKey;
-    this.missionId = _missionId;
   };
 
   var _default = MissionLogger;
