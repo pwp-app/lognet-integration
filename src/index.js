@@ -88,9 +88,17 @@ class Lognet {
         }
     }
     setKey = (appKey) => {
+        if (typeof appKey !== 'string') {
+            this.printError('App key must be a string.');
+            return;
+        }
         this.options.appKey = appKey;
     }
     setMission = (missionId) => {
+        if (typeof missionId !== 'string') {
+            this.printError('Mission ID must be a string.');
+            return;
+        }
         this.options.missionId = missionId;
     }
     setInjection = (injection) => {
@@ -111,6 +119,17 @@ class Lognet {
             return;
         }
         this.debug = flag;
+    }
+    setOptions = (options) => {
+        if (typeof options !== 'object') {
+            this.printError('Options should be a object.');
+            return;
+        }
+        if (!options.appKey || !options.missionId || !options.injection) {
+            this.printError('Cannot set options, some necessary options are lost.');
+            return;
+        }
+        this.options = options;
     }
     interceptConsole = () => {
         this.privateError = console.error;
