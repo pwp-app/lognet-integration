@@ -125,8 +125,12 @@ class Lognet {
             this.printError('Options should be a object.');
             return;
         }
-        if (!options.appKey || !options.missionId || !options.injection) {
+        if (!options.appKey) {
             this.printError('Cannot set options, some necessary options are lost.');
+            return;
+        }
+        if (!options.injection) {
+            options.injection = false;
             return;
         }
         this.options = options;
