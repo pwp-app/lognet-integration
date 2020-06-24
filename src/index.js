@@ -75,7 +75,10 @@ class Lognet {
         if (!this.inited) {
             let dom = document.getElementById('lognet');
             if (dom) {
-                this.appKey = dom.getAttribute('key');
+                let key = dom.getAttribute('key');
+                let mission = dom.getAttribute('mission');
+                this.options.appKey = key ? key : this.options.appKey;
+                this.options.missionId = mission ? mission : this.options.missionId;
             }
             // init injection
             if (this.injection) {
