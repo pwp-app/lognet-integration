@@ -112,6 +112,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+  function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
   function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
   function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -188,7 +190,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         var dom = document.getElementById('lognet');
 
         if (dom) {
-          _this.appKey = dom.getAttribute('key');
+          var key = dom.getAttribute('key');
+          var mission = dom.getAttribute('mission');
+          _this.options.appKey = key ? key : _this.options.appKey;
+          _this.options.missionId = mission ? mission : _this.options.missionId;
         } // init injection
 
 
@@ -201,10 +206,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     });
 
     _defineProperty(this, "setKey", function (appKey) {
+      if (typeof appKey !== 'string') {
+        _this.printError('App key must be a string.');
+
+        return;
+      }
+
       _this.options.appKey = appKey;
     });
 
     _defineProperty(this, "setMission", function (missionId) {
+      if (typeof missionId !== 'string') {
+        _this.printError('Mission ID must be a string.');
+
+        return;
+      }
+
       _this.options.missionId = missionId;
     });
 
@@ -232,6 +249,27 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
 
       _this.debug = flag;
+    });
+
+    _defineProperty(this, "setOptions", function (options) {
+      if (_typeof(options) !== 'object') {
+        _this.printError('Options should be a object.');
+
+        return;
+      }
+
+      if (!options.appKey) {
+        _this.printError('Cannot set options, some necessary options are lost.');
+
+        return;
+      }
+
+      if (!options.injection) {
+        options.injection = false;
+        return;
+      }
+
+      _this.options = options;
     });
 
     _defineProperty(this, "interceptConsole", function () {
